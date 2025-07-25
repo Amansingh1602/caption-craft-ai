@@ -43,7 +43,7 @@ Topic: {{{topic}}}
 {{#if style}}Style: {{{style}}}{{/if}}
 {{#if platform}}Platform: {{{platform}}}{{/if}}
 
-Format the response as a JSON array of strings. Each string should be a caption prompt.
+Format the response as a JSON object with a "prompts" key containing an array of strings. Each string should be a caption prompt.
 `,
 });
 
