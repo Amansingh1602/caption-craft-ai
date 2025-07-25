@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { History, LayoutGrid, Wand2 } from 'lucide-react';
+import { History, Wand2 } from 'lucide-react';
 
 import {
   Sidebar,
@@ -16,27 +16,25 @@ import {
   SidebarGroup,
   SidebarGroupLabel,
 } from '@/components/ui/sidebar';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CaptionGenerator } from '@/components/caption-generator';
-import { PostSuggester } from '@/components/post-suggester';
-import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 
 type HistoryItem = {
   id: string;
-  type: 'caption' | 'post';
+  type: 'caption';
   query: string;
 };
 
 export default function Home() {
   const [history, setHistory] = React.useState<HistoryItem[]>([]);
-  const [activeTab, setActiveTab] = React.useState('caption-generator');
   const [selectedHistory, setSelectedHistory] = React.useState<HistoryItem | null>(null);
 
   React.useEffect(() => {
     const storedHistory = localStorage.getItem('captionCraftHistory');
     if (storedHistory) {
-      setHistory(JSON.parse(storedHistory));
+      // Filter out any non-caption history items from previous versions
+      const parsedHistory = JSON.parse(storedHistory).filter((item: any) => item.type === 'caption');
+      setHistory(parsedHistory);
     }
   }, []);
 
@@ -49,13 +47,13 @@ export default function Home() {
   };
 
   const handleHistorySelect = (item: HistoryItem) => {
-    setActiveTab(item.type === 'caption' ? 'caption-generator' : 'post-suggester');
     setSelectedHistory(item);
   };
   
   const clearHistory = () => {
     setHistory([]);
     localStorage.removeItem('captionCraftHistory');
+    setSelectedHistory(null);
   }
 
   return (
@@ -100,35 +98,14 @@ export default function Home() {
       <SidebarInset className="min-h-screen">
         <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:px-6">
           <SidebarTrigger className="md:hidden" />
-          <h2 className="text-xl font-semibold font-headline">Prompt Generators</h2>
+          <h2 className="text-xl font-semibold font-headline">Caption Prompt Generator</h2>
         </header>
 
         <main className="flex flex-1 flex-col gap-4 p-4 sm:px-6 sm:py-6 md:gap-8">
-          <Tabs value={activeTab} onValueChange={setActiveTab} defaultValue="caption-generator">
-            <TabsList className="grid w-full grid-cols-2 max-w-lg mx-auto">
-              <TabsTrigger value="caption-generator">
-                <LayoutGrid className="mr-2 h-4 w-4" />
-                Caption Prompts
-              </TabsTrigger>
-              <TabsTrigger value="post-suggester">
-                <Wand2 className="mr-2 h-4 w-4" />
-                Post Prompts
-              </TabsTrigger>
-            </TabsList>
-            <Separator className="my-6" />
-            <TabsContent value="caption-generator">
-              <CaptionGenerator
+            <CaptionGenerator
                 onGenerate={query => addToHistory({ type: 'caption', query })}
-                selectedQuery={selectedHistory?.type === 'caption' ? selectedHistory.query : undefined}
+                selectedQuery={selectedHistory?.query}
               />
-            </TabsContent>
-            <TabsContent value="post-suggester">
-              <PostSuggester
-                onGenerate={query => addToHistory({ type: 'post', query })}
-                selectedQuery={selectedHistory?.type === 'post' ? selectedHistory.query : undefined}
-              />
-            </TabsContent>
-          </Tabs>
         </main>
       </SidebarInset>
     </SidebarProvider>
