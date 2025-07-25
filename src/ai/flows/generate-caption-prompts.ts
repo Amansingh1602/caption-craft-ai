@@ -38,10 +38,10 @@ const prompt = ai.definePrompt({
 
 Topic: {{{topic}}}
 
-{% if tone %}Tone: {{{tone}}}{% endif %}
-{% if length %}Length: {{{length}}}{% endif %}
-{% if style %}Style: {{{style}}}{% endif %}
-{% if platform %}Platform: {{{platform}}}{% endif %}
+{{#if tone}}Tone: {{{tone}}}{{/if}}
+{{#if length}}Length: {{{length}}}{{/if}}
+{{#if style}}Style: {{{style}}}{{/if}}
+{{#if platform}}Platform: {{{platform}}}{{/if}}
 
 Format the response as a JSON array of strings. Each string should be a caption prompt.
 `,
