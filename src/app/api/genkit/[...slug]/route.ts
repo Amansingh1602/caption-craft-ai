@@ -1,6 +1,6 @@
 'use server';
 
-import {genkitNextHandler} from '@genkit-ai/next/server';
+import {createNextHandler} from '@genkit-ai/next';
 import '@/ai/flows/generate-caption-prompts';
 
-export const {GET, POST} = genkitNextHandler();
+export const {GET, POST} = createNextHandler();
