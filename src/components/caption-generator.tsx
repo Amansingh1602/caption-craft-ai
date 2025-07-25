@@ -4,7 +4,7 @@ import * as React from 'react';
 import { z } from 'zod';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, Sparkles } from 'lucide-react';
+import { Loader2, Sparkles, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -49,7 +49,11 @@ export function CaptionGenerator({ onGenerate, selectedQuery }: CaptionGenerator
   React.useEffect(() => {
     if (selectedQuery) {
       form.setValue('topic', selectedQuery);
-      setGeneratedPrompts([]);
+      if(form.formState.isSubmitSuccessful){
+        // Don't clear prompts if we just submitted this form
+      } else {
+        setGeneratedPrompts([]);
+      }
     }
   }, [selectedQuery, form]);
 
@@ -71,6 +75,10 @@ export function CaptionGenerator({ onGenerate, selectedQuery }: CaptionGenerator
     }
 
     setIsLoading(false);
+  };
+  
+  const removePrompt = (index: number) => {
+    setGeneratedPrompts(prev => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -178,7 +186,7 @@ export function CaptionGenerator({ onGenerate, selectedQuery }: CaptionGenerator
                 {generatedPrompts.length > 0 && (
                      <div className="grid grid-cols-1 gap-4">
                         {generatedPrompts.map((prompt, index) => (
-                            <PromptCard key={index} promptText={prompt} />
+                            <PromptCard key={index} promptText={prompt} onClose={() => removePrompt(index)} />
                         ))}
                     </div>
                 )}

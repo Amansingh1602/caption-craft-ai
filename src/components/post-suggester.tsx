@@ -4,7 +4,7 @@ import * as React from 'react';
 import { z } from 'zod';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, Sparkles } from 'lucide-react';
+import { Loader2, Sparkles, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -44,7 +44,11 @@ export function PostSuggester({ onGenerate, selectedQuery }: PostSuggesterProps)
     if (selectedQuery) {
       form.setValue('category', selectedQuery);
       form.setValue('preferences', '');
-      setGeneratedPrompt(null);
+      if(form.formState.isSubmitSuccessful) {
+        // Don't clear prompts if we just submitted this form
+      } else {
+        setGeneratedPrompt(null);
+      }
     }
   }, [selectedQuery, form]);
 
@@ -67,6 +71,10 @@ export function PostSuggester({ onGenerate, selectedQuery }: PostSuggesterProps)
     
     setIsLoading(false);
   };
+  
+  const removePrompt = () => {
+    setGeneratedPrompt(null);
+  }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
@@ -144,7 +152,7 @@ export function PostSuggester({ onGenerate, selectedQuery }: PostSuggesterProps)
                 )}
                 
                 {generatedPrompt && (
-                    <PromptCard promptText={generatedPrompt} />
+                    <PromptCard promptText={generatedPrompt} onClose={removePrompt}/>
                 )}
             </div>
         </div>
